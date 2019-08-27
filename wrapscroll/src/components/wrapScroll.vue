@@ -1,7 +1,7 @@
 <template>
   <div class="wrap_scroll"  v-if="items.length>0">
         <div class="wrap-scroll_content">
-            <ul class="wrap-scroll_list" id="wrap-scroll_list" style="left:0px;" @mousedown="drag_scroll" >
+            <ul class="wrap-scroll_list" id="wrap-scroll_list" style="left:0px;"  >
                     <li v-for="(item, index) in items" :key="index" >
                         <img :src="item.imageUrl[0]" class="wrap-scroll_img"  @click="jumpToDetail(item.playerNo)"/>
                         <div class="hot-recommend_txt" :title="item.nickname" >{{item.nickname}}</div>
@@ -23,7 +23,6 @@ export default {
         childLen:0,//里面滚动的元素个数
         childWidth:0,//滚动元素的宽度
         allWidth:0,//滚动元素总宽度
-        showWidth:0,//页面展示的宽度
         showWidth:0,//页面展示的宽度
         gap:0,////滚动元素之间的间隔
         srcollNum:0,//一次滚动的元素个数
@@ -94,12 +93,20 @@ export default {
             this.scrollWidth = (Number(this.childWidth)+this.gap);//每次滚动一个元素的宽度
             this.allWidth=this.scrollWidth*this.childLen;//总共需要滚动的宽度
             this.scrollW=this.scrollWidth*this.srcollNum;//每次正常滚动一次的宽度
-            this.left = Number(this.doc.style.left.slice(1,this.doc.style.left.indexOf("px")));//外层元素的左边距离
+            // this.left = Number(this.doc.style.left.slice(1,this.doc.style.left.indexOf("px")));//外层元素的左边距离
+            if(this.doc.style.left.indexOf("-")>=0){
+                this.left = Number(this.doc.style.left.slice(1,this.doc.style.left.indexOf("px")));//外层元素的左边距离
+            }else{
+                this.left = Number(this.doc.style.left.slice(0,this.doc.style.left.indexOf("px")));//外层元素的左边距离
+
+            }
       },
     scroll_next(){
         this.getDom();
         let remainDis = this.allWidth-(this.left+this.showWidth);//剩下需要滚动的距离
-        if(remainDis<this.scrollW && remainDis > 0){//如果剩下滚动的距离小于一次正常滚动的距离
+         if(this.allWidth < this.showWidth){//如果总共需要滚动的宽度小于页面展示的宽度
+            this.doc.style.left  = '0px';
+        }else if(remainDis<this.scrollW && remainDis > 0){//如果剩下滚动的距离小于一次正常滚动的距离
             this.nextW = this.allWidth - this.showWidth;
             this.doc.style.left  = `-${this.nextW}px`;
         }else if((this.left+this.showWidth) == this.allWidth){//left距离加上页面展示的距离等于总共需要滚动的宽度
@@ -112,7 +119,7 @@ export default {
     },
     scroll_pre(){
         this.getDom();
-        if(this.left == 0){//如果左边距离为0就直接跳到最后一页
+        if(this.left == 0  && this.allWidth > this.showWidth){//如果左边距离为0就直接跳到最后一页
             this.preW=this.allWidth - this.showWidth;
             this.doc.style.left  = `-${this.preW}px`;
         }else if(this.left < this.scrollW){//如果外层元素的左边距离小于一次滚动的距离那就直接设为0
@@ -126,19 +133,19 @@ export default {
        
         
     },
-    drag_scroll(e){
-        let _this=this
-            var e = window.event || e;
-            var disX = e.clientX - _this.doc.offsetLeft;
-            document.onmousemove=function(e){
-                _this.doc.left =( e.clientX - disX) + 'px';
-            }
-            document.onmouseup=function(e){
-                document.οnmοuseup=null;
-                document.οnmοusemοve=null;
-            }
+    // drag_scroll(e){
+    //     let _this=this
+    //         var e = window.event || e;
+    //         var disX = e.clientX - _this.doc.offsetLeft;
+    //         document.onmousemove=function(e){
+    //             _this.doc.left =( e.clientX - disX) + 'px';
+    //         }
+    //         document.onmouseup=function(e){
+    //             document.οnmοuseup=null;
+    //             document.οnmοusemοve=null;
+    //         }
         
-    },
+    // },
     jumpToDetail(playerNo) {
         let channel = this.getUrlParam("channel") || '';//获取渠道码
         if(channel){
