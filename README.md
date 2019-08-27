@@ -1,6 +1,7 @@
 # wrapScroll
-vue轮播图组件
-组件使用方法
+#vue轮播图组件
+#组件使用方法
+(```)
 <WrapScroll :items="items" :width="1152" :proChildWidth="176" :proGap='16' :proSrcollNum='3' :toUrl=""></WrapScroll>
 items:{//滚动的元素
           type:Array,
@@ -28,3 +29,4 @@ toUrl:{//跳转地址
 type:String,
 default:""
 }
+(```)
